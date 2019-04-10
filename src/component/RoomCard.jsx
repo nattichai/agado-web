@@ -137,7 +137,7 @@ export default class RoomCard extends Component {
                   <h6>(for {this.props.interval} days)</h6>
                 </Col>
                 <Col xs={12} md={5} className="my-2">
-                  <Form id="reservation" onSubmit={this.reserveRoom}>
+                  <Form id={"reservation" + this.props.rid} onSubmit={this.reserveRoom}>
                     <InputGroup>
                       <InputGroup.Prepend>
                         <InputGroup.Text className="bg-dark border-dark text-white">Rooms</InputGroup.Text>
@@ -162,7 +162,7 @@ export default class RoomCard extends Component {
                 <Col xs={12} md={3} className="my-2">
                   {
                     currentUser && currentUser.user_type === "traveler" ?
-                      <Button type="submit" form="reservation" variant="success" className="py-3 px-4">
+                      <Button type="submit" form={"reservation" + this.props.rid} variant="success" className="py-3 px-4">
                         <span className="h6">Reserve now</span>
                       </Button>
                       :
