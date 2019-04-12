@@ -46,7 +46,8 @@ export default class SearchResult extends Component {
         h.review = r.length;
         h.reviews = []
         r.forEach(review => h.reviews[5 - review.rating] = h.reviews[5 - review.rating ] + 1);
-        h.price = h.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), 0);
+        h.price = h.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), Infinity);
+        h.price = h.price === Infinity ? 0 : h.price;
         h.roomLeft = h.rooms.map(room => room.availableRoom).reduce((a, b) => a + b, 0);
         hotels.push(h)
       } else {

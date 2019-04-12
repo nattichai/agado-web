@@ -182,22 +182,22 @@ export default class CustomNavBar extends Component {
           <div className="text-right d-md-none">
             <Button variant="link"
               className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel-info').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-info-circle" /></h5>
             </Button>
             <Button variant="link"
               className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel-rooms').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-door-closed" /></h5>
             </Button>
             <Button variant="link"
               className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel-reviews').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_reviews').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-comment-dots" /></h5>
             </Button>
             <Button variant="link"
               className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel-managers').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_managers').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-users" /></h5>
             </Button>
           </div>
@@ -214,12 +214,12 @@ export default class CustomNavBar extends Component {
             </Button>
             <Button variant="link"
               className="text-dark bold px-2"
-              onClick={() => document.querySelector('#hotel-info').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-info-circle" /> Info</h6>
             </Button>
             <Button variant="link"
               className="text-dark bold px-2"
-              onClick={() => document.querySelector('#hotel-rooms').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-door-closed" /> Rooms</h6>
             </Button>
           </div>
@@ -229,12 +229,12 @@ export default class CustomNavBar extends Component {
             </Button>
             <Button variant="link"
               className="text-dark bold pl-0 pr-2"
-              onClick={() => document.querySelector('#hotel-info').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-info-circle" /></h5>
             </Button>
             <Button variant="link"
               className="text-dark bold px-0"
-              onClick={() => document.querySelector('#hotel-rooms').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-door-closed" /></h5>
             </Button>
           </div>
@@ -253,12 +253,12 @@ export default class CustomNavBar extends Component {
             </Button>
             <Button variant="link"
               className="text-dark bold px-2"
-              onClick={() => document.querySelector('#hotel-info').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-info-circle" /> Info</h6>
             </Button>
             <Button variant="link"
               className="text-dark bold px-2"
-              onClick={() => document.querySelector('#hotel-rooms').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-door-closed" /> Rooms</h6>
             </Button>
           </div>
@@ -268,12 +268,12 @@ export default class CustomNavBar extends Component {
             </Button>
             <Button variant="link"
               className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel-info').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-info-circle" /></h5>
             </Button>
             <Button variant="link"
               className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel-rooms').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-door-closed" /></h5>
             </Button>
           </div>
@@ -593,22 +593,22 @@ export default class CustomNavBar extends Component {
           <div className="d-xs-sm-none d-sm-md-none">
             <Button variant="link"
               className="text-dark bold mx-2"
-              onClick={() => document.querySelector('#hotel-info').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-info-circle" /> Info</h6>
             </Button>
             <Button variant="link"
               className="text-dark bold mx-2"
-              onClick={() => document.querySelector('#hotel-rooms').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-door-closed" /> Rooms</h6>
             </Button>
             <Button variant="link"
               className="text-dark bold mx-2"
-              onClick={() => document.querySelector('#hotel-reviews').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_reviews').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-comment-dots" /> Reviews</h6>
             </Button>
             <Button variant="link"
               className="text-dark bold mx-2"
-              onClick={() => document.querySelector('#hotel-managers').scrollIntoView({ behavior: 'smooth' })}>
+              onClick={() => document.querySelector('#hotel_managers').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-users" /> Managers</h6>
             </Button>
           </div>

@@ -14,6 +14,8 @@ import CreateHotel from './page/CreateHotel';
 import MyHotel from './page/MyHotel';
 import Request from './page/Request';
 import Payment from './page/Payment';
+import Reservation from './page/Reservation';
+import HotelReservation from './page/HotelReservation';
 
 class App extends Component {
   componentWillMount() {
@@ -62,16 +64,17 @@ class App extends Component {
               <Route exact path="/" render={() => <Home />} />
               <Route path="/tutorial" render={() => <Tutorial />} />
               <Route path="/search" render={() => <SearchResult />} />
+              <Route path="/profile" render={() => <Profile />} />
 
               <Route path="/payment" render={() => <Payment />} />
+              <Route path="/reservation" render={() => <Reservation />} />
               
               <Route path="/request" render={() => <Request />} />
-              
-              <Route path="/hotel/create" render={() => <CreateHotel />} />
               <Route path="/myhotel" render={() => <MyHotel />} />
+              <Route path="/hotel/reservation" render={() => <HotelReservation />} />
+              <Route path="/hotel/create" render={() => <CreateHotel />} />
               <Route path="/hotel" render={() => <HotelInfo mode={this.state.mode} />} />
-
-              <Route path="/profile" render={() => <Profile />} />
+              
             </Switch>
           </Router>
           <Footer />

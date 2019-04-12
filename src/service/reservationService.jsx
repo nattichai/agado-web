@@ -9,18 +9,24 @@ export class reservationService {
     return reservations;
   }
 
+  static getReservationOfHotel = (hid) => {
+    let reservations = this.getReservations();
+    reservations = reservations.filter(reservation => "" + reservation.hid === "" + hid );
+    return reservations;
+  }
+
   static createReservation = (reservation) => {
     let reservations = this.getReservations();
-    reservation.rid = reservations.length + 1;
+    reservation.res_id = reservations.length + 1;
     reservations.push(reservation);
     localStorage.setItem("reservations", JSON.stringify(reservations));
     return true;
   }
 
-  static editReservation = (rid, editedReservation) => {
+  static editReservation = (res_id, editedReservation) => {
     let reservations = this.getReservations();
     for (let i = 0; i < reservations.length; i++) {
-      if ("" + rid === "" + reservations[i].rid) {
+      if ("" + res_id === "" + reservations[i].res_id) {
         reservations[i] = {
           ...reservations[i],
           ...editedReservation
@@ -32,9 +38,9 @@ export class reservationService {
     return false;
   }
 
-  static deleteReservation = (rid) => {
+  static deleteReservation = (res_id) => {
     let reservations = this.getReservations();
-    reservations = reservations.filter(reservation => "" + reservation.rid !== "" + rid);
+    reservations = reservations.filter(reservation => "" + reservation.res_id !== "" + res_id);
     localStorage.setItem("reservations", JSON.stringify(reservations));
     return true;
   }

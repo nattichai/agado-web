@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
+
 import { Col, Row, Image, Button, Card } from 'react-bootstrap';
 import qs from 'qs';
 
-import { requestService } from '../service/requestService';
+import { reservationService } from '../service/reservationService';
 import { userService } from '../service/userService';
 import { hotelService } from '../service/hotelService';
 
-export default class Request extends Component {
+export default class HotelReservation extends Component {
   componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
+    const hotel = hotelService.getHotel(search.hid);
 
-    let requests = [];
+    let reservations = [];
     if (currentUser) {
-      requests = requestService.getRequestOf(currentUser.uid).reduce((r, request) => {
-        r[request.hid] = (r[request.hid] || []).concat(request);
+      reservations = reservationService.getReservationOfHotel(search.hid).reduce((r, reservation) => {
+        r[reservation.rid] = (r[reservation.rid] || []).concat(reservation);
         return r;
       }, []);
     }
@@ -25,7 +27,8 @@ export default class Request extends Component {
       search: search,
       currentUser: currentUser,
       validUser: currentUser && currentUser.user_type === "hotel_manager",
-      requests: requests
+      hotel: hotel,
+      reservations: reservations
     });
   }
 
@@ -37,12 +40,11 @@ export default class Request extends Component {
     return pathname + search;
   }
 
-  getHotelLink = (hid) => {
-    const pathname = "/hotel";
-    const search = qs.stringify({
-      hid: hid
-    }, { addQueryPrefix: true });
-    return pathname + search;
+  getPrice = (reservation, room) => {
+    const checkin = reservation.checkin;
+    const checkout = reservation.checkout;
+    const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
+    return interval * room.price * Number(reservation.num);
   }
 
   render() {
@@ -53,38 +55,51 @@ export default class Request extends Component {
           <h4>You have to be a Hotel manager to access this page.</h4>
         </div>
       )
+    } else if (!this.state.hotel) {
+      return (
+        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+          <h1>This page is not exist</h1>
+          {/* <h4>This page is not exist.</h4> */}
+        </div>
+      )
+    } else if (!this.state.hotel.managers.includes(this.state.currentUser.uid)) {
+      return (
+        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+          <h1>Permission denied</h1>
+          <h4>You do not have a permission to manage this hotel yet.</h4>
+        </div>
+      )
     }
-    const requests = this.state.requests;
+    const reservations = this.state.reservations;
+    const hotel = this.state.hotel;
     return (
       <div className="hotel-bg px-auto hotel-info">
         {
-          requests.length === 0 ?
+          reservations.length === 0 ?
             <div className="scroll-snap-child">
-              <h1>Request</h1>
-              <h4>You have no requests at this time.</h4>
+              <h1>Reservation</h1>
+              <h4>This hotel have no reservations at this time.</h4>
             </div>
             :
             <>
               {
-                requests.map(request => {
-                  if (!request) return;
-                  const hotel = hotelService.getHotel(request[0].hid);
+                reservations.map(reservation => {
+                  if (!reservation) return;
+                  const room = hotel.rooms[reservation[0].rid];
                   return (
                     <div className="px-content scroll-snap-child mb-5">
                       <div className="px-content">
                         <Card>
                           <Card.Header>
                             <Row className="align-items-center text-center justify-content-center">
-                              <a className="text-dark" href={this.getHotelLink(hotel.hid)}>
-                                <h4 className="mr-md-4 my-2">{hotel.name}</h4>
-                              </a>
+                              <h4 className="text-dark mr-md-4 my-2">{room.name}</h4>
                               {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hid)}>View hotel</Button> */}
                             </Row>
                           </Card.Header>
                           {/* <hr /> */}
                           <Card.Body>
                             {
-                              request.map((r, idx) => {
+                              reservation.map((r, idx) => {
                                 const user = userService.getUser(r.uid);
                                 return (
                                   <>
@@ -98,11 +113,10 @@ export default class Request extends Component {
                                           </Row>
                                         </a>
                                       </Col>
-                                      <Col xs={4} md={2} className="my-3">
-                                        <Button variant="success" onClick={() => requestService.acceptRequest(r.rid, r.hid, r.uid)}>Accept</Button>
-                                      </Col>
-                                      <Col xs={4} md={2} className="my-3">
-                                        <Button variant="danger" onClick={() => requestService.rejectRequest(r.rid)}>Reject</Button>
+                                      <Col xs={10} md={4} className="my-3">
+                                        <h6>Date: {new Date(r.checkin).toLocaleDateString() + " - " + new Date(r.checkout).toLocaleDateString()}</h6>
+                                        <h6>Number of room: {r.num}</h6>
+                                        <h6>Price: ฿ {this.getPrice(r, room)}</h6>
                                       </Col>
                                     </Row>
                                   </>

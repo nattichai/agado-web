@@ -178,7 +178,7 @@ export default class CreateHotel extends Component {
             </Col>
           </Row>
           <Form id="create-hotel" onSubmit={this.checkForm}>
-            <div className="px-content mt-5 scroll-snap-child" id="hotel-info">
+            <div className="px-content mt-5 scroll-snap-child" id="hotel_info">
               <h3 className="d-inline">{hotel.name ? hotel.name : "Hotel's name"}</h3>
               <span>
                 <strike className="px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strike>
@@ -253,7 +253,7 @@ export default class CreateHotel extends Component {
                   required /> : ""}
               <hr className="mb-5" />
             </div>
-            <div id="hotel-rooms" className="mb-5">
+            <div id="hotel_rooms" className="mb-5">
               <div>
                 <h3 className="scroll-snap-child px-content">Rooms</h3>
                 <ItemsCarousel

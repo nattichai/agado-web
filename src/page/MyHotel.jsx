@@ -21,7 +21,7 @@ export default class MyHotel extends Component {
       validUser: currentUser && currentUser.user_type === "hotel_manager"
     });
     
-    let hotels = hotelService.getHotelOf(currentUser.uid);
+    let hotels = currentUser ? hotelService.getHotelOf(currentUser.uid) : [];
     hotels = hotels.map(hotel => {
       const reviews = reviewService.getHotelReviews(hotel.hid);
       hotel.review = reviews.length;

@@ -126,7 +126,7 @@ export default class Payment extends Component {
             <h6>Hotel: {hotel.name}</h6>
             <h6>Room: {hotel.rooms[Number(this.state.search.rid)].name}</h6>
             <h6>Number of room: {this.state.search.num}</h6>
-            <h6>Price: {this.getPrice()}</h6>
+            <h6>Price: ฿ {this.getPrice()}</h6>
           </div>
         </div>
         <br />

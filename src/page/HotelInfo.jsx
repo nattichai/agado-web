@@ -99,18 +99,18 @@ export default class HotelInfo extends Component {
               :
               <>
                 {this.getImageSection()}
-                <div className="px-content" id="hotel-info">
+                <div className="px-content" id="hotel_info">
                   {this.getInfoSection()}
                 </div>
-                <div id="hotel-rooms">
+                <div id="hotel_rooms">
                   <RoomSelection />
                 </div>
               </>
           }
-          <div className="px-content" id="hotel-reviews">
+          <div className="px-content" id="hotel_reviews">
             {this.getReviewsSection()}
           </div>
-          <div className="px-content" id="hotel-managers">
+          <div className="px-content" id="hotel_managers">
             {this.getManagersSection()}
           </div>
         </div>

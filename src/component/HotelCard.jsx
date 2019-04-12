@@ -64,7 +64,11 @@ export default class HotelCard extends Component {
           </Row>
         </Card.Header>
         <div className="ratio4-3">
-          <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
+          {
+            hotel.imgs[0] === "" ?
+              <div className="bg-dark abs-center border-none" />
+              : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
+          }
         </div>
         <Badge variant="info" className="right-card"><div className="price mx-4 my-2">฿ {hotel.price}</div></Badge>
         <Card.Body>
