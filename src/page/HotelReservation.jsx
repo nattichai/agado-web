@@ -59,7 +59,6 @@ export default class HotelReservation extends Component {
       return (
         <div className="hotel-bg px-auto hotel-info scroll-snap-child">
           <h1>This page is not exist</h1>
-          {/* <h4>This page is not exist.</h4> */}
         </div>
       )
     } else if (!this.state.hotel.managers.includes(this.state.currentUser.uid)) {

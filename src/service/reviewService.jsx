@@ -3,6 +3,12 @@ export class reviewService {
     return JSON.parse(localStorage.getItem("reviews"));
   }
 
+  static getReviewsOf = (uid) => {
+    let reviews = this.getReviews();
+    reviews = reviews.filter(review => { return "" + review.uid === "" + uid });
+    return reviews;
+  }
+
   static getHotelReviews = (hid) => {
     let reviews = this.getReviews();
     reviews = reviews.filter(review => { return "" + review.hid === "" + hid });

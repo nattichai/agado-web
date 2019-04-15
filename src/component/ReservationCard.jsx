@@ -19,8 +19,15 @@ export default class ReservationCard extends Component {
 
   getDayleft = () => {
     const checkin = this.props.reservation.checkin;
-    const dayLeft = Math.max(0, (new Date(checkin) - new Date()) / 24 / 60 / 60 / 1000).toFixed(0);
-    return dayLeft > 1 ? dayLeft + " days left" : dayLeft === 1 ? "1 day left" : "Passed";
+    const dayLeft = Math.max(0, (new Date(checkin) - new Date()) / 24 / 60 / 60 / 1000);
+    return dayLeft.toFixed(0) > 1 ? dayLeft.toFixed(0) + " days left" :
+      dayLeft.toFixed(0) === 1 ? "1 day left" :
+        (dayLeft * 24).toFixed(0) > 1 ? (dayLeft * 24).toFixed(0) + " hours left" :
+          (dayLeft * 24).toFixed(0) === 1 ? "1 hour left" :
+            (dayLeft * 24 * 60).toFixed(0) > 1 ? (dayLeft * 24 * 60).toFixed(0) + " minutes left" :
+              (dayLeft * 24 * 60).toFixed(0) === 1 ? "1 minute left" :
+                (dayLeft * 24 * 60).toFixed(0) > 0 ? "< 1 minute left" :
+                  "Passed";
   }
 
   getPrice = () => {
@@ -61,7 +68,7 @@ export default class ReservationCard extends Component {
           <Card.Header className="py-4">
             <Row className="align-items-center" noGutters={true}>
               <Col xs={8}>
-                <Card.Title as="h6">{hotel.name}</Card.Title>
+                <Card.Title as="h6"><a className="text-dark" href={this.getHotelLink()}>{hotel.name}</a></Card.Title>
                 <Card.Subtitle as="h6">{new Date(reservation.checkin).toLocaleDateString() + " - " + new Date(reservation.checkout).toLocaleDateString()}</Card.Subtitle>
               </Col>
               <Col xs={4} className="text-center">
@@ -83,7 +90,7 @@ export default class ReservationCard extends Component {
           </Card.Body>
           <Card.Footer className="text-center">
             <Row className="align-items-center text-center" noGutters={true}>
-              <Col xs={6}>
+              <Col>
                 {
                   this.isPassed() ?
                     <Button className="px-4 py-2" variant="info" onClick={() => this.setState({ showModal: "review" })}>
@@ -91,9 +98,6 @@ export default class ReservationCard extends Component {
                     </Button>
                     : <Button className="px-4 py-2" variant="danger" onClick={() => this.setState({ showModal: "cancel_reservation_confirm" })}>Cancel</Button>
                 }
-              </Col>
-              <Col xs={6}>
-                <Button className="px-4 py-2" variant="info" href={this.getHotelLink()}>View Hotel</Button>
               </Col>
             </Row>
           </Card.Footer>

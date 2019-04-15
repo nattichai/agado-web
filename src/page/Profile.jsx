@@ -7,6 +7,10 @@ import CustomModal from '../component/CustomModal';
 import { userService } from '../service/userService';
 
 import '../css/Profile.css';
+import { reviewService } from '../service/reviewService';
+import { hotelService } from '../service/hotelService';
+import HotelManageCard from '../component/HotelManageCard';
+import HotelCard from '../component/HotelCard';
 
 export default class Profile extends Component {
   state = {
@@ -25,15 +29,9 @@ export default class Profile extends Component {
     const currentUser = userService.getCurrentUser();
 
     this.setState({
-      user: {
-        ...user
-      },
-      currentUser: {
-        ...currentUser
-      },
-      editedUser: {
-        ...currentUser
-      }
+      user: user,
+      currentUser: currentUser,
+      editedUser: currentUser
     });
   }
 
@@ -86,7 +84,30 @@ export default class Profile extends Component {
     }
   }
 
+  getProfileLink = (uid) => {
+    const pathname = "/profile";
+    const search = qs.stringify({
+      uid: uid
+    }, { addQueryPrefix: true });
+    return pathname + search;
+  }
+
+  getHotelLink = (hid) => {
+    const pathname = "/hotel";
+    const search = qs.stringify({
+      hid: hid
+    }, { addQueryPrefix: true });
+    return pathname + search;
+  }
+
   render() {
+    if (!this.state.user) {
+      return (
+        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+          <h1>This page is not exist</h1>
+        </div>
+      )
+    }
     return (
       <>
         <div className="profile-bg scroll-snap-child">
@@ -95,6 +116,10 @@ export default class Profile extends Component {
               this.state.mode === "edit" ? this.getEditUserComponent() : ""
           }
           <hr />
+          {
+            this.state.user.user_type === "traveler" ? this.getPreviousReviews() :
+              this.getHotelsManaged()
+          }
         </div>
         <CustomModal
           showModal={this.state.showModal === "save_completed"}
@@ -260,6 +285,102 @@ export default class Profile extends Component {
           </Form>
         </Col>
       </Row>
+    )
+  }
+
+  getPreviousReviews = () => {
+    const reviews = reviewService.getReviewsOf(this.state.user.uid);
+    const user = this.state.user;
+    if (reviews.length === 0) {
+      return;
+    }
+    return (
+      <div className="px-content">
+        <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
+          <h3>Review's history</h3>
+        </Row>
+        {
+          reviews.map(review => {
+            const hotel = hotelService.getHotel(review.hid);
+            return (
+              <>
+                <hr className="my-2" />
+                <Row className="align-items-center scroll-snap-child">
+                  <Col xs={12} sm={4} md={3} lg={2} className="text-center">
+                    <a className="text-dark" href={this.getProfileLink(user.uid)}>
+                      <div className="w-xs-25 w-sm-50">
+                        <div className="circle-avatar w-100 my-2" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
+                      </div>
+                      {this.state.currentUser && "" + this.state.currentUser.uid === "" + user.uid ? <strong>Me</strong> : user.first_name + " " + user.last_name}
+                    </a>
+                  </Col>
+                  <Col xs={12} sm={8} md={9} lg={10}>
+                    <h5 className="d-inline">{review.title} </h5>
+                    <a className="fs-14 text-dark" href={this.getHotelLink(hotel.hid)}>@{hotel.name}</a>
+                    <div className="fs-14">{this.getRatingStar(review.rating)} {new Date(review.date).toLocaleDateString()}</div>
+                    {review.comment}
+                  </Col>
+                </Row>
+              </>
+            )
+          })
+        }
+        <hr className="mb-5" />
+      </div>
+    )
+  }
+
+  getRatingStar = (rating) => {
+    rating = Math.round(rating * 2) / 2;
+
+    let ratingStar = [];
+    let key = 1;
+
+    for (let i = 0; i < rating - 0.5; ++i) {
+      const star = <i className="fas fa-star" key={key++} />;
+      ratingStar.push(star);
+    }
+    if (rating % 1 !== 0) {
+      const halfStar = <i className="fas fa-star-half-alt" key={key++} />;
+      ratingStar.push(halfStar);
+      rating += 0.5;
+    }
+    for (let i = 0; i < 5 - rating; ++i) {
+      const emptyStar = <i className="far fa-star" key={key++} />;
+      ratingStar.push(emptyStar);
+    }
+    return ratingStar;
+  }
+
+  getHotelsManaged = () => {
+    let hotels = hotelService.getHotelOf(this.state.user.uid);
+    hotels = hotels.map(hotel => {
+      const reviews = reviewService.getHotelReviews(hotel.hid);
+      hotel.review = reviews.length;
+      hotel.rating = reviews.length <= 0 ? 0 :
+        (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length;
+      hotel.price = hotel.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), Infinity);
+      hotel.price = hotel.price === Infinity ? 0 : hotel.price;
+      hotel.roomLeft = hotel.rooms.map(room => room.availableRoom).reduce((a, b) => a + b, 0);
+      return hotel
+    })
+    return (
+      <div className="px-content">
+        <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
+          <h3>Hotels managed</h3>
+        </Row>
+        <Row>
+          {
+            hotels.map(hotel => {
+              return (
+                <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hid}>
+                  <HotelCard hotel={hotel} />
+                </Col>
+              )
+            })
+          }
+        </Row>
+      </div>
     )
   }
 }
