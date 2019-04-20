@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, Button, Row, Col, Form, InputGroup, Image, Dropdown, DropdownButton, ProgressBar, Badge } from 'react-bootstrap';
+import { Navbar, Nav, Button, Row, Col, Form, InputGroup, Image, Dropdown, DropdownButton, ProgressBar, Badge, OverlayTrigger, Popover } from 'react-bootstrap';
 import qs from 'qs';
 
 import SigninSignupModal from './SigninSignupModal';
@@ -11,6 +11,8 @@ import '../css/CustomNavBar.css'
 import CustomModal from './CustomModal';
 import { hotelService } from '../service/hotelService';
 import { requestService } from '../service/requestService';
+import InputRange from 'react-input-range';
+import 'react-input-range/lib/css/index.css';
 
 export default class CustomNavBar extends Component {
   componentWillMount() {
@@ -20,8 +22,15 @@ export default class CustomNavBar extends Component {
     this.setState({
       pathname: pathname,
       search: search,
-      currentUser: currentUser
+      currentUser: currentUser,
+      price: {
+        min: search.min_price ? Number(search.min_price) : null,
+        max: search.max_price ? Number(search.max_price) : null
+      },
+      rating: []
     });
+
+    this.loadRating(search);
   }
 
   componentDidMount() {
@@ -39,12 +48,25 @@ export default class CustomNavBar extends Component {
     this.setState({ scrolled: scrolled });
   }
 
+  getRatingQs = () => {
+    let rating = [];
+    for (let i = 0; i < this.state.rating.length; i++) {
+      if (this.state.rating[i]) {
+        rating.push(i);
+      }
+    }
+    return rating;
+  }
+
   getSearchLink = () => {
     const pathname = "/search";
     const search = qs.stringify({
       hotel_name: this.state.search.hotel_name,
       checkin: this.state.search.checkin,
-      checkout: this.state.search.checkout
+      checkout: this.state.search.checkout,
+      min_price: this.state.price.min,
+      max_price: this.state.price.max,
+      rating: this.getRatingQs()
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -102,6 +124,39 @@ export default class CustomNavBar extends Component {
   isUserOwn = () => {
     const hotel = hotelService.getHotel(this.state.search.hid);
     return hotel && hotel.managers.includes(this.state.currentUser.uid);
+  }
+
+  loadPrice = (s) => {
+    const search = s ? s : this.state.search;
+    this.setState({
+      price: {
+        min: search.min_price ? Number(search.min_price) : null,
+        max: search.max_price ? Number(search.max_price) : null
+      }
+    });
+  }
+
+  loadRating = (s) => {
+    const search = s ? s : this.state.search;
+    if (!search.rating) {
+      return;
+    }
+
+    let rating = []
+    for (let i = 0; i < search.rating.length; i++) {
+      rating[Number(search.rating[i])] = true;
+    }
+    this.setState({
+      rating: rating
+    });
+  }
+
+  toggleRatingFilter = (idx) => {
+    let rating = this.state.rating;
+    rating[idx] = !rating[idx];
+    this.setState({
+      rating: rating
+    });
   }
 
   render() {
@@ -475,23 +530,118 @@ export default class CustomNavBar extends Component {
               </div>
           }
           <Navbar.Text>filter:</Navbar.Text>
-          <DropdownButton variant="link" bsPrefix="btn btn-link text-dark bold" title="Price" className="ml-2 mx-md-4">
-            <Dropdown.Item>{"< $50"}</Dropdown.Item>
-            <Dropdown.Item>{"$50 - $100"}</Dropdown.Item>
-            <Dropdown.Item>{"> $100"}</Dropdown.Item>
-          </DropdownButton>
-          <DropdownButton variant="link" bsPrefix="btn btn-link text-dark bold" title="Rating" className="ml-2 mx-md-4">
-            <Dropdown.Item>{"< 1 star"}</Dropdown.Item>
-            <Dropdown.Item>{"1-2 star"}</Dropdown.Item>
-            <Dropdown.Item>{"2-3 star"}</Dropdown.Item>
-            <Dropdown.Item>{"3-4 star"}</Dropdown.Item>
-            <Dropdown.Item>{"4-5 star"}</Dropdown.Item>
-          </DropdownButton>
-          <DropdownButton variant="link" bsPrefix="btn btn-link text-dark bold" title="Tag" className="ml-2 mx-md-4">
-            <Dropdown.Item>Breakfast</Dropdown.Item>
-            <Dropdown.Item>Pool</Dropdown.Item>
-            <Dropdown.Item>Sea</Dropdown.Item>
-          </DropdownButton>
+          <OverlayTrigger trigger="focus" onExited={this.loadPrice} placement="bottom" overlay={
+            <Popover tabIndex={-1}>
+              <h6><strong>Price per night</strong></h6>
+              <br />
+              <div className="mx-2">
+                <InputRange
+                  minValue={this.props.priceRange.min}
+                  maxValue={this.props.priceRange.max}
+                  value={{
+                    min: this.state.price.min ? this.state.price.min : this.props.priceRange.min,
+                    max: this.state.price.max ? this.state.price.max : this.props.priceRange.max,
+                  }}
+                  step={(this.props.priceRange.max - this.props.priceRange.min) / 10}
+                  onChange={val => this.setState({ price: val })} />
+              </div>
+              <br />
+              <Row>
+                <Col>MIN: ฿ {this.state.price.min ? this.state.price.min : this.props.priceRange.min}</Col>
+                <Col>MAX: ฿ {this.state.price.max ? this.state.price.max : this.props.priceRange.max}</Col>
+              </Row>
+              <br />
+              <Button className="w-100" variant="dark" onClick={() => window.location.href = this.getSearchLink()}><div className="fs-12">Apply</div></Button>
+            </Popover>
+          }>
+            {
+              this.state.search.min_price || this.state.search.max_price ?
+                <Button variant="dark" className="bold mx-2">
+                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ price: { min: null, max: null } })} />
+                </Button>
+                :
+                <Button variant="light" className="bold mx-2">
+                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                </Button>
+            }
+          </OverlayTrigger>
+          <OverlayTrigger trigger="focus" onExited={this.loadRating} placement="bottom" overlay={
+            <Popover>
+              <h6><strong>Star rating</strong></h6>
+              <Form.Check
+                tabIndex={-1}
+                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
+                checked={this.state.rating[5]}
+                onChange={() => this.toggleRatingFilter(5)} />
+              <Form.Check
+                tabIndex={-1}
+                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
+                checked={this.state.rating[4]}
+                onChange={() => this.toggleRatingFilter(4)} />
+              <Form.Check
+                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
+                checked={this.state.rating[3]}
+                onChange={() => this.toggleRatingFilter(3)} />
+              <Form.Check
+                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
+                checked={this.state.rating[2]}
+                onChange={() => this.toggleRatingFilter(2)} />
+              <Form.Check
+                label={<><i className="fas fa-star text-dark ml-2 mr-1" /></>}
+                checked={this.state.rating[1]}
+                onChange={() => this.toggleRatingFilter(1)} />
+              <Form.Check
+                label="No rating"
+                checked={this.state.rating[0]}
+                onChange={() => this.toggleRatingFilter(0)} />
+              <br />
+              <Button className="w-100" variant="dark" onClick={() => window.location.href = this.getSearchLink()}><div className="fs-12">Apply</div></Button>
+            </Popover>
+          }>
+            {
+              this.state.search.rating ?
+                <Button variant="dark" className="bold mx-2">
+                  <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ rating: [] })} />
+                </Button>
+                :
+                <Button variant="light" className="bold mx-2">
+                  <i className="fas fa-star text-dark" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                </Button>
+            }
+          </OverlayTrigger>
+          <OverlayTrigger trigger="focus" onExit={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+            <Popover>
+              <h6><strong>Price per night</strong></h6>
+              <br />
+              <div className="mx-2">
+                <InputRange
+                  minValue={this.props.priceRange.min}
+                  maxValue={this.props.priceRange.max}
+                  value={{
+                    min: this.state.price.min ? this.state.price.min : this.props.priceRange.min,
+                    max: this.state.price.max ? this.state.price.max : this.props.priceRange.max,
+                  }}
+                  step={(this.props.priceRange.max - this.props.priceRange.min) / 10}
+                  onChange={val => this.setState({ price: val })} />
+              </div>
+              <br />
+              <Row>
+                <Col>MIN: ฿ {this.state.price.min ? this.state.price.min : this.props.priceRange.min}</Col>
+                <Col>MAX: ฿ {this.state.price.max ? this.state.price.max : this.props.priceRange.max}</Col>
+              </Row>
+            </Popover>
+          }>
+            {
+              this.state.price.min || this.state.price.max ?
+                <Button variant="dark" className="bold mx-2">
+                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ price: { min: null, max: null } })} />
+                </Button>
+                :
+                <Button variant="light" className="bold mx-2">
+                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                </Button>
+            }
+          </OverlayTrigger>
         </>
       );
     } else if (this.state.pathname === "/hotel") {
@@ -555,16 +705,16 @@ export default class CustomNavBar extends Component {
                 <div className="mx-auto">
                   <hr className="mx-0 my-3 d-md-none" />
                   <div className="text-center">
-                  {
-                    this.props.mode === "view" ?
-                    <Button variant="link" className="text-dark" onClick={e => {e.preventDefault(); this.props.toggleMode();}}>
-                      <h5 className="my-0"><strong><i className="fas fa-edit" /> Edit hotel</strong></h5>
-                    </Button>
-                    :
-                    <Button type="submit" form="create-hotel" variant="link" className="text-success">
-                      <h5 className="my-0"><strong><i className="fas fa-edit" /> Save changes</strong></h5>
-                    </Button>
-                  }
+                    {
+                      this.props.mode === "view" ?
+                        <Button variant="link" className="text-dark" onClick={e => { e.preventDefault(); this.props.toggleMode(); }}>
+                          <h5 className="my-0"><strong><i className="fas fa-edit" /> Edit hotel</strong></h5>
+                        </Button>
+                        :
+                        <Button type="submit" form="create-hotel" variant="link" className="text-success">
+                          <h5 className="my-0"><strong><i className="fas fa-edit" /> Save changes</strong></h5>
+                        </Button>
+                    }
                     <Button variant="link" className="text-dark" href={this.getHotelReservationLink()}>
                       <h5 className="my-0"><strong><i className="fas fa-calendar-check" /> See reservation</strong></h5>
                     </Button>

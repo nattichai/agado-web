@@ -45,7 +45,7 @@ export default class SearchResult extends Component {
         h.rating = r.length > 0 ? (r.map(review => review.rating).reduce((a, b) => a + b, 0)) / r.length : 0;
         h.review = r.length;
         h.reviews = []
-        r.forEach(review => h.reviews[5 - review.rating] = h.reviews[5 - review.rating ] + 1);
+        r.forEach(review => h.reviews[5 - review.rating] = h.reviews[5 - review.rating] + 1);
         h.price = h.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), Infinity);
         h.price = h.price === Infinity ? 0 : h.price;
         h.roomLeft = h.rooms.map(room => room.availableRoom).reduce((a, b) => a + b, 0);
@@ -54,6 +54,16 @@ export default class SearchResult extends Component {
         hotels.push(JSON.parse(JSON.stringify(hotel)));
       }
     }
+
+    let min = hotels.map(hotel => hotel.price).reduce((a, b) => Math.min(a, b), Infinity);
+    min = min === Infinity ? 0 : min;
+    let max = hotels.map(hotel => hotel.price).reduce((a, b) => Math.max(a, b), 0);
+    const priceRange = {
+      min: min,
+      max: max
+    }
+
+    this.props.setPriceRange(priceRange);
 
     this.setState({
       hotels: hotels

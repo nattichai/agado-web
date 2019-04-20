@@ -44,7 +44,11 @@ class App extends Component {
     }
 
     this.setState({
-      mode: "view"
+      mode: "view",
+      priceRange: {
+        min: -Infinity,
+        max: Infinity
+      }
     });
   }
 
@@ -54,16 +58,22 @@ class App extends Component {
     })
   }
 
+  setPriceRange = (priceRange) => {
+    this.setState({
+      priceRange: priceRange
+    });
+  }
+
   render() {
     return (
       <>
         <div className="scroll-snap-container">
-          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} />
+          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} />
           <Router>
             <Switch>
               <Route exact path="/" render={() => <Home />} />
               <Route path="/tutorial" render={() => <Tutorial />} />
-              <Route path="/search" render={() => <SearchResult />} />
+              <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} />} />
               <Route path="/profile" render={() => <Profile />} />
 
               <Route path="/payment" render={() => <Payment />} />

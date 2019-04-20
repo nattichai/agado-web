@@ -111,7 +111,7 @@ export default class RoomCard extends Component {
                   {
                     room.amenities.map((isHas, idx) => {
                       if (idx && !isHas) {
-                        return;
+                        return <></>;
                       }
                       const amenity = hotelService.amenities[idx === 0 ? !isHas + 0 : idx + 1];
                       return (

@@ -71,7 +71,7 @@ export default class HotelCard extends Component {
           }
         </div>
         <Badge variant="info" className="right-card"><div className="price mx-4 my-2">฿ {hotel.price}</div></Badge>
-        <Card.Body>
+        <Card.Body className="hotel-desc">
           <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>
         </Card.Body>
         <Card.Footer>
